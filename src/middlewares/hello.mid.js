@@ -1,4 +1,5 @@
 'use strict';
+
 const logger = require('../utils/logger');
 
 module.exports = () => {
@@ -14,7 +15,7 @@ module.exports = () => {
             // May be update req
             next();
         } else {
-            res.json({error: 'Error in Hello middleware.'});
+            return res.json({error: 'Error in Hello middleware.'});
         }
 
     }

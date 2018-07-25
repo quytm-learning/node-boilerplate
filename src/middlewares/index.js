@@ -1,3 +1,7 @@
-module.exports = {
-    helloMiddleware: require('./hello.mid')
+'use strict';
+
+module.exports = () => {
+    return {
+        helloMiddleware: require('./hello.mid')()
+    }
 };
