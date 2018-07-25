@@ -2,17 +2,19 @@
 
 const api = require('express').Router();
 const logger = require('../utils/logger');
+const helloService = require('../services/hello.service');
+const helloMiddleware = require('../middlewares/hello.mid');
 
-module.exports = (config, service, middleware) => {
+module.exports = () => {
 
     const TAG = 'hello.controller';
 
-    api.get('/', middleware.helloMiddleware, function (req, res) {
+    api.get('/', helloMiddleware(), function (req, res) {
 
         // let name = req.query.name || 'world';
 
         // service.helloService.hello(name)
-        service.helloService.findAll()
+        helloService.findAll()
             .then(data => {
                 logger.log(`${TAG}.hello`, `data = ${JSON.stringify(data)}`);
                 res.json(data);
@@ -23,11 +25,11 @@ module.exports = (config, service, middleware) => {
             })
     });
 
-    api.get('/:name', middleware.helloMiddleware, function (req, res) {
+    api.get('/:name', helloMiddleware(), function (req, res) {
 
         let name = req.params.name || 'world';
 
-        service.helloService.findByName(name)
+        helloService.findByName(name)
             .then(data => {
                 logger.log(`${TAG}.hello`, `data = ${JSON.stringify(data)}`);
                 res.json(data);

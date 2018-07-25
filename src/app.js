@@ -13,9 +13,7 @@ new Promise((resolve, reject) => {
             logger.log('app', `After connect to database, msg = ${msg}`);
 
             const bodyParser = require('body-parser');
-            const services = require('./services');
-            const middlewares = require('./middlewares')();
-            const controllers = require('./controllers')(config, services, middlewares);
+            const appRouter = require('./app.routes');
 
             const cors = require('cors');
 
@@ -25,7 +23,7 @@ new Promise((resolve, reject) => {
             app.use(bodyParser.urlencoded({extended: false}));
             app.use(cors());
 
-            app.use(controllers);
+            app.use(appRouter());
 
             app.listen(port, (error) => {
                 if (error) throw error;
