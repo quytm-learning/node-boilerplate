@@ -1,24 +1,38 @@
 'use strict';
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const logger = require('./utils/logger');
-const cors = require('cors');
-
 const config = require('./config/config.dev.json');
-const controllers = require('./controllers');
-const services = require('./services');
-const middlewares = require('./middlewares')();
-
+const database = require('./database');
 const app = express();
-const port = process.env.PORT || config.PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+new Promise((resolve, reject) => {
+    database.connect(config)
+        .then((msg) => {
 
-app.use(controllers(config, services, middlewares));
+            logger.log('app', `After connect to database, msg = ${msg}`);
 
-app.listen(port, () => {
-    logger.log('app', `Listening on port ${port}`);
+            const bodyParser = require('body-parser');
+            const services = require('./services');
+            const middlewares = require('./middlewares')();
+            const controllers = require('./controllers')(config, services, middlewares);
+
+            const cors = require('cors');
+
+            const port = process.env.PORT || config.PORT || 3000;
+
+            app.use(bodyParser.json());
+            app.use(bodyParser.urlencoded({extended: false}));
+            app.use(cors());
+
+            app.use(controllers);
+
+            app.listen(port, (error) => {
+                if (error) throw error;
+                logger.log('app', `Listening on port ${port}`);
+            });
+
+            resolve();
+        })
+        .catch(reject);
 });
